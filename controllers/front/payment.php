@@ -42,7 +42,8 @@ class Privat24PaymentModuleFrontController extends ModuleFrontController
             $details[] = $product['name'];
         }
         
-        $this->module->validateOrder($cart->id, Configuration::get('PRIVAT24_WAITINGPAYMENT_OS'), $amount, $this->module->displayName);
+        $customer = new Customer((int)$this->context->cart->id_customer);        
+        $this->module->validateOrder($cart->id, Configuration::get('PRIVAT24_WAITINGPAYMENT_OS'), $amount, $this->module->displayName, null, array(), null, false, $customer->secure_key);
         
         $this->context->smarty->assign(array(
             'payment_url' => Privat24::PAY_PB_URL,
@@ -51,6 +52,7 @@ class Privat24PaymentModuleFrontController extends ModuleFrontController
             'amount' => $amount,
             'merchant_id' => $this->module->merchant_id,
             'order_id' => $cart->id,
+            'return_url' => $this->context->link->getPageLink('order-confirmation.php?key='.$customer->secure_key.'&id_cart='.(int)$this->context->cart->id.'&id_module='.(int)$this->module->id.'&id_order='.(int)$this->module->currentOrder),
         ));
         
         $this->setTemplate('payment_execution.tpl');

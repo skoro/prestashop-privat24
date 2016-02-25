@@ -6,8 +6,9 @@
     <input type="hidden" name="merchant" value="{$merchant_id}">
     <input type="hidden" name="order" value="{$order_id}">
     <input type="hidden" name="details" value="{$details}">
+    <input type="hidden" name="ext_details" value="">
     <input type="hidden" name="pay_way" value="privat24">
-    <input type="hidden" name="return_url" value="{$link->getPageLink('history')}">
+    <input type="hidden" name="return_url" value="{$return_url}">
     <input type="hidden" name="server_url" value="{$link->getModuleLink('privat24', 'validation')}">
 </form>
     

@@ -74,6 +74,11 @@ class Privat24 extends PaymentModule
             return false;
         }
         
+        Configuration::deleteByName('PRIVAT24_WAITINGPAYMENT_OS');
+        Configuration::deleteByName('PRIVAT24_MERCHANT_ID');
+        Configuration::deleteByName('PRIVAT24_MERCHANT_PASSWORD');
+        Configuration::deleteByName('PRIVAT24_DEBUG_MODE');
+        
         return true;
     }
     
@@ -123,14 +128,15 @@ class Privat24 extends PaymentModule
             $merchant_id = strval(Tools::getValue('PRIVAT24_MERCHANT_ID'));
             $merchant_password = strval(Tools::getValue('PRIVAT24_MERCHANT_PASSWORD'));
             // TODO: merchant_id is big integer ?
-            if (!$merchant_id || !Validate::isGenericName($merchant_id) || !$merchant_password) {
-                $output .= $this->displayError($this->l('Invalid Configuration value'));
-            } else {
+            if ($merchant_id && Validate::isGenericName($merchant_id) && $merchant_password) {
                 Configuration::updateValue('PRIVAT24_MERCHANT_ID', $merchant_id);
                 Configuration::updateValue('PRIVAT24_MERCHANT_PASSWORD', $merchant_password);
+                Configuration::updateValue('PRIVAT24_DEBUG_MODE', (bool)Tools::getValue('PRIVAT24_DEBUG_MODE'));
                 $this->merchant_id = $merchant_id;
                 $this->merchant_password = $merchant_password;
                 $output .= $this->displayConfirmation($this->l('Merchant id has been updated.'));
+            } else {
+                $output .= $this->displayError($this->l('Invalid Configuration value'));
             }
         }
         return $output . $this->displayForm();
@@ -153,11 +159,21 @@ class Privat24 extends PaymentModule
                     'required' => true,
                 ),
                 array(
-                    'type' => 'password',
+                    'type' => 'text',
                     'label' => $this->l('Merchant password'),
                     'name' => 'PRIVAT24_MERCHANT_PASSWORD',
                     'size' => 60,
                     'required' => true,
+                ),
+                array(
+                    'type' => 'switch',
+                    'label' => $this->l('Enable debug mode.'),
+                    'name' => 'PRIVAT24_DEBUG_MODE',
+                    'is_bool' => true,
+                    'values' => array(
+                        array('value' => 0),
+                        array('value' => 1),
+                    ),
                 ),
             ),
             'submit' => array(
@@ -167,6 +183,8 @@ class Privat24 extends PaymentModule
         
         $helper->submit_action = 'submit' . $this->name;
         $helper->fields_value['PRIVAT24_MERCHANT_ID'] = Configuration::get('PRIVAT24_MERCHANT_ID');
+        $helper->fields_value['PRIVAT24_MERCHANT_PASSWORD'] = Configuration::get('PRIVAT24_MERCHANT_PASSWORD');
+        $helper->fields_value['PRIVAT24_DEBUG_MODE'] = Configuration::get('PRIVAT24_DEBUG_MODE');
         
         return $helper->generateForm($fields_form);
     }
