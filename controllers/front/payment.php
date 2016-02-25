@@ -1,10 +1,12 @@
 <?php
 /**
  * @author Skorobogatko Alexei <a.skorobogatko@soft-industry.com>
- * @copyright 2015 Soft-Industry
+ * @copyright 2016 Soft-Industry
  * @version $Id$
  * @since 1.0.0
  */
+
+if (!defined('_PS_VERSION_')) exit;
 
 /**
  * Payment callback.

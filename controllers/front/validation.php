@@ -6,6 +6,8 @@
  * @since 1.0.0
  */
 
+if (!defined('_PS_VERSION_')) exit;
+
 /**
  * Validate callback.
  * 
