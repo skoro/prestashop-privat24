@@ -21,20 +21,6 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
      */
     public function postProcess()
     {
-        // Check that this payment option is still available in case the 
-        // customer changed his address just before the end of the checkout process.
-        $authorized = false;
-        foreach (Module::getPaymentModules() as $module) {
-            if ($module['name'] == 'privat24') {
-                $authorized = true;
-                break;
-            }
-        }
-        
-        if (!$authorized) {
-            die($this->module->l('This payment method is not available.', 'validation'));
-        }
-        
         // Log requests from Privat API side in Debug mode.
         if (Configuration::get('PRIVAT24_DEBUG_MODE')) {
             $logger = new FileLogger();
@@ -42,19 +28,57 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
             $logger->logError($_POST);
         }
         
-        $payment = Tools::getValue('payment');
-        $hash = sha1(md5($payment . $this->module->merchant_password));
-        
+        $payment = array();
+        parse_str(Tools::getValue('payment'), $payment);
+        $hash = sha1(md5(Tools::getValue('payment') . $this->module->merchant_password));
+
         if ($payment && $hash === Tools::getValue('signature')) {
-            $cart_id = (int)Tools::getValue('order');
-            $cart = new Cart($cart_id);
-            $amount = $cart->getOrderTotal();
-            $this->module->validateOrder($cart->id, Configuration::get('PRIVAT24_WAITINGPAYMENT_OS'), $amount, $this->module->displayName);
+            if ($payment['state'] == 'ok') {
+                $state = Configuration::get('PRIVAT24_WAITINGPAYMENT_OS');
+                $cart_id = (int)$payment['order'];
+                $cart = new Cart($cart_id);
+                $order = new Order(Order::getOrderByCartId($cart_id));
+                if (!Validate::isLoadedObject($order)) {
+                    PrestaShopLogger::addLog('Privat24: cannot get order by cart id ' . $cart_id, 3);
+                    die();
+                }
+                if ($order->getCurrentState() != $state) {
+                    PrestaShopLogger::addLog(sprintf('Privat24: order id %s current state %s !== expected state %s', $order->id, $order->getCurrentState(), $state), 3);
+                    die();                
+                }
+                $order_history = new OrderHistory();
+                $order_history->id_order = $order->id;
+                $order_history->changeIdOrderState(_PS_OS_PAYMENT_, $order->id);
+                $order_history->addWithemail();
+                $this->setPaymentTransaction($order, $payment);
+                $this->module->paymentNotify($order, $payment);
+                PrestaShopLogger::addLog(sprintf('Privat24 payment accepted: order id: %s, amount: %s, ref: %s', $order->id, $payment['amt'], $payment['ref']), 1);
+            } else {
+                PrestaShopLogger::addLog(sprintf('Privat24 payment failed: state: %s, order: %s, ref: %s', $payment['state'], $payment['order'], $payment['ref']), 3, null, null, null, true);
+            }
         } else {
             PrestaShopLogger::addLog('Privat24: Payment callback bad signature.', 3, null, null, null, true);
         }
         
         die();
+    }
+    
+    /**
+     * Fill transaction_id in order payments.
+     *
+     * @param Order $order
+     * @param array $payment payment data from gateway.
+     */
+    protected function setPaymentTransaction($order, array $payment)
+    {
+        Db::getInstance()->execute('
+            UPDATE `'._DB_PREFIX_.'order_payment`
+            SET transaction_id = "' . $payment['ref'] . '"
+            WHERE order_reference = "' . $order->reference . '"
+                AND amount = ' . $payment['amt'] . '
+                AND payment_method = "' . $this->module->displayName . '"
+                AND transaction_id = ""
+        ');
     }
     
 }

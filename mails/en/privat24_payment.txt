@@ -1,0 +1,8 @@
+Order {order_name} - Payment Privat24 accepted
+
+Payment for order {order_name} has been successful.
+
+Payment amount {amount} has been added to order {order_name}
+
+Payment transaction {payment_transaction}
+
