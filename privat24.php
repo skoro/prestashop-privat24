@@ -1,10 +1,12 @@
 <?php
 /**
- * @author Skorobogatko Alexei <a.skorobogatko@soft-industry.com>
- * @copyright 2015 Soft-Industry
- * @version $Id$
- * @since 1.0.0
- */
+* 2016 Soft Industry
+*
+*   @author    Skorobogatko Alexei <a.skorobogatko@soft-industry.com>
+*   @copyright 2016 Soft-Industry
+*   @version   $Id$
+*   @license   http://opensource.org/licenses/afl-3.0.php
+*/
 
 if (!defined('_PS_VERSION_')) {
     exit;

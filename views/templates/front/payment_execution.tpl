@@ -1,3 +1,11 @@
+{*
+* 2016 Soft Industry
+*
+*    @author Skorobogatko Alexei <a.skorobogatko@soft-industry.com>
+*    @copyright 2016 Soft-Industry
+*    @version $Id$
+*}
+
 <h1>{l s='You will be redirected to the Privat24 site in a few seconds...' mod='privat24'}</h1>
 
 <form id="privat24_payment" method="POST" action="{$payment_url|escape:'htmlall':'UTF-8'}">

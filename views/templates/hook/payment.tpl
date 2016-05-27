@@ -1,3 +1,11 @@
+{*
+* 2016 Soft Industry
+*
+*    @author Skorobogatko Alexei <a.skorobogatko@soft-industry.com>
+*    @copyright 2016 Soft-Industry
+*    @version $Id$
+*}
+
 <div class="row">
     <div class="col-xs-12">
         <p class="payment_module">
