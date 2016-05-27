@@ -6,11 +6,13 @@
  * @since 1.0.0
  */
 
-if (!defined('_PS_VERSION_')) exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 /**
  * Validate callback.
- * 
+ *
  * @author skoro
  */
 class Privat24ValidationModuleFrontController extends ModuleFrontController
@@ -42,8 +44,16 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
                     die();
                 }
                 if ($order->getCurrentState() != $state) {
-                    PrestaShopLogger::addLog(sprintf('Privat24: order id %s current state %s !== expected state %s', $order->id, $order->getCurrentState(), $state), 3);
-                    die();                
+                    PrestaShopLogger::addLog(
+                        sprintf(
+                            'Privat24: order id %s current state %s !== expected state %s',
+                            $order->id,
+                            $order->getCurrentState(),
+                            $state
+                        ),
+                        3
+                    );
+                    die();
                 }
                 $order_history = new OrderHistory();
                 $order_history->id_order = $order->id;
@@ -51,9 +61,29 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
                 $order_history->addWithemail();
                 $this->setPaymentTransaction($order, $payment);
                 $this->module->paymentNotify($order, $payment);
-                PrestaShopLogger::addLog(sprintf('Privat24 payment accepted: order id: %s, amount: %s, ref: %s', $order->id, $payment['amt'], $payment['ref']), 1);
+                PrestaShopLogger::addLog(
+                    sprintf(
+                        'Privat24 payment accepted: order id: %s, amount: %s, ref: %s',
+                        $order->id,
+                        $payment['amt'],
+                        $payment['ref']
+                    ),
+                    1
+                );
             } else {
-                PrestaShopLogger::addLog(sprintf('Privat24 payment failed: state: %s, order: %s, ref: %s', $payment['state'], $payment['order'], $payment['ref']), 3, null, null, null, true);
+                PrestaShopLogger::addLog(
+                    sprintf(
+                        'Privat24 payment failed: state: %s, order: %s, ref: %s',
+                        $payment['state'],
+                        $payment['order'],
+                        $payment['ref']
+                    ),
+                    3,
+                    null,
+                    null,
+                    null,
+                    true
+                );
             }
         } else {
             PrestaShopLogger::addLog('Privat24: Payment callback bad signature.', 3, null, null, null, true);
@@ -79,5 +109,4 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
                 AND transaction_id = ""
         ');
     }
-    
 }

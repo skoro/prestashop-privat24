@@ -6,13 +6,15 @@
  * @since 1.0.0
  */
 
-if (!defined('_PS_VERSION_')) exit;
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
 
 /**
  * Privat24
- * 
+ *
  * Provides payment gateway for Privat24 service.
- * 
+ *
  * @author skoro
  */
 class Privat24 extends PaymentModule
@@ -98,7 +100,7 @@ class Privat24 extends PaymentModule
     
     /**
      * Create module order status.
-     * 
+     *
      * @return boolean
      */
     protected function createOrderState()
@@ -108,23 +110,23 @@ class Privat24 extends PaymentModule
             $os->name = array();
             foreach (Language::getLanguages(false) as $language) {
                 switch (Tools::strtolower($language['iso_code'])) {
-                    case 'ru' :
+                    case 'ru':
                         $status = 'Ожидание оплаты Приват24';
                         break;
-                    case 'ua' :
+                    case 'ua':
                         $status = 'Очікування платежу Приват24';
                         break;
-                    default :
+                    default:
                         $status = 'Waiting payment ' . $this->displayName;
                 }
                 $os->name[(int)$language['id_lang']] = $status;
             }
-			$os->color = '#4169E1';
-			$os->hidden = false;
-			$os->send_email = false;
-			$os->delivery = false;
-			$os->logable = false;
-			$os->invoice = false;
+            $os->color = '#4169E1';
+            $os->hidden = false;
+            $os->send_email = false;
+            $os->delivery = false;
+            $os->logable = false;
+            $os->invoice = false;
             if ($os->add()) {
                 Configuration::updateValue('PRIVAT24_WAITINGPAYMENT_OS', $os->id);
                 copy(dirname(__FILE__) . '/logo.gif', dirname(__FILE__) . '/../../img/os/' . (int)$os->id . '.gif');
@@ -207,8 +209,8 @@ class Privat24 extends PaymentModule
     {
         $output = $status = '';
         if (Tools::isSubmit('submit' . $this->name)) {
-            $merchant_id = strval(Tools::getValue('PRIVAT24_MERCHANT_ID'));
-            $merchant_password = strval(Tools::getValue('PRIVAT24_MERCHANT_PASSWORD'));
+            $merchant_id = (string) Tools::getValue('PRIVAT24_MERCHANT_ID');
+            $merchant_password = (string) Tools::getValue('PRIVAT24_MERCHANT_PASSWORD');
             $notify = (bool)Tools::getValue('PRIVAT24_PAYMENT_NOTIFY');
             $emails = Tools::getValue('PRIVAT24_NOTIFY_EMAILS');
             $status = '';
@@ -295,7 +297,10 @@ class Privat24 extends PaymentModule
         $helper->fields_value['PRIVAT24_MERCHANT_PASSWORD'] = Configuration::get('PRIVAT24_MERCHANT_PASSWORD');
         $helper->fields_value['PRIVAT24_DEBUG_MODE'] = Configuration::get('PRIVAT24_DEBUG_MODE');
         $helper->fields_value['PRIVAT24_PAYMENT_NOTIFY'] = Configuration::get('PRIVAT24_PAYMENT_NOTIFY');
-        $helper->fields_value['PRIVAT24_NOTIFY_EMAILS'] = Tools::getValue('PRIVAT24_NOTIFY_EMAILS', Configuration::get('PRIVAT24_NOTIFY_EMAILS'));
+        $helper->fields_value['PRIVAT24_NOTIFY_EMAILS'] = Tools::getValue(
+            'PRIVAT24_NOTIFY_EMAILS',
+            Configuration::get('PRIVAT24_NOTIFY_EMAILS')
+        );
         
         return $helper->generateForm($fields_form);
     }
@@ -322,7 +327,7 @@ class Privat24 extends PaymentModule
     
     /**
      * Notify emails about accepted payment.
-     * 
+     *
      * @param Order $order order instance
      * @param array $payment data from payment gateway
      * @return bool
@@ -330,7 +335,7 @@ class Privat24 extends PaymentModule
     public function paymentNotify(Order $order, array $payment)
     {
         if (!Configuration::get('PRIVAT24_PAYMENT_NOTIFY')) {
-            return true;        
+            return true;
         }
         if (!Validate::isLoadedObject($order)) {
             return false;
@@ -356,5 +361,4 @@ class Privat24 extends PaymentModule
         }
         return true;
     }
-    
 }
