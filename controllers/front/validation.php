@@ -36,7 +36,6 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
             if ($payment['state'] == 'ok') {
                 $state = Configuration::get('PRIVAT24_WAITINGPAYMENT_OS');
                 $cart_id = (int)$payment['order'];
-                $cart = new Cart($cart_id);
                 $order = new Order(Order::getOrderByCartId($cart_id));
                 if (!Validate::isLoadedObject($order)) {
                     PrestaShopLogger::addLog('Privat24: cannot get order by cart id ' . $cart_id, 3);
