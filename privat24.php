@@ -372,7 +372,6 @@ class Privat24 extends PaymentModule
                 '{amount}' => $payment['amt'] . ' ' . $context->currency->iso_code,
                 '{payment_transaction}' => $payment['ref'],
             );
-            var_dump($data);
             foreach ($emails as $email) {
                 Mail::Send((int)$order->id_lang, $template, $subject, $data, $email);
             }
