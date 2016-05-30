@@ -326,6 +326,10 @@ class Privat24 extends PaymentModule
             return;
         }
         
+        if (isset($this->context->controller)) {
+            $this->context->controller->addCSS($this->_path . 'privat24.css');
+        }
+        
         $this->smarty->assign(array(
             'this_path' => $this->_path,
             'this_path_ssl' => Tools::getShopDomainSsl(true, true).__PS_BASE_URI__.'modules/'.$this->name.'/',
