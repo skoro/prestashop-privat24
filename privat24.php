@@ -207,6 +207,11 @@ class Privat24 extends PaymentModule
         return $emails;
     }
     
+    /**
+     * Process module configuration form.
+     *
+     * @return string
+     */
     public function getContent()
     {
         $output = $status = '';
@@ -240,6 +245,11 @@ class Privat24 extends PaymentModule
         return $output . $status . $this->displayForm();
     }
     
+    /**
+     * Module configuration form.
+     *
+     * @return string
+     */
     public function displayForm()
     {
         $helper = new HelperForm();
@@ -307,6 +317,9 @@ class Privat24 extends PaymentModule
         return $helper->generateForm($fields_form);
     }
     
+    /**
+     * Implements hookPayment.
+     */
     public function hookPayment($params)
     {
         if (!$this->active) {
@@ -322,6 +335,9 @@ class Privat24 extends PaymentModule
         return $this->display(__FILE__, 'payment.tpl');
     }
     
+    /**
+     * Not used in this module.
+     */
     public function hookPaymentReturn()
     {
         
