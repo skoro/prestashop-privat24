@@ -327,7 +327,7 @@ class Privat24 extends PaymentModule
         }
         
         if (isset($this->context->controller)) {
-            $this->context->controller->addCSS($this->_path . 'privat24.css');
+            $this->context->controller->addCSS($this->_path . 'views/css/privat24.css');
         }
         
         $this->smarty->assign(array(

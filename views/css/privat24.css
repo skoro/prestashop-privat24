@@ -1,6 +1,6 @@
 
 p.payment_module a.privat24 {
-    background: url(../../modules/privat24/views/img/bg_24.png) 15px 17px no-repeat #fbfbfb;
+    background: url(../img/bg_24.png) 15px 17px no-repeat #fbfbfb;
 }
 
 p.payment_module a.privat24::after {
