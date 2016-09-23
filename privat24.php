@@ -43,12 +43,13 @@ class Privat24 extends PaymentModule
     public function __construct()
     {
         $this->name = 'privat24';
-        $this->version = '0.1.1';
+        $this->version = '0.2';
         $this->author = 'Soft Industry';
         $this->tab = 'payments_gateways';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
         $this->need_instance = 0;
         $this->bootstrap = true;
+        $this->module_key = '98300a9bd7f3e615cc475c9e56cfef25';
         
         $this->merchant_id = Configuration::get('PRIVAT24_MERCHANT_ID');
         $this->merchant_password = Configuration::get('PRIVAT24_MERCHANT_PASSWORD');

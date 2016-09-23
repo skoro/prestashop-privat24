@@ -1,0 +1,8 @@
+0.1
+Initial version.
+
+0.1.1
+Try to upload module to PrestaShop market.
+
+0.2
+Check order currency and paid amount before changing order state.
