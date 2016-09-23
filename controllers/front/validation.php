@@ -57,6 +57,45 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
                     );
                     die();
                 }
+                
+                // Check paid currency and paid amount.
+                $id_currency = Currency::getIdByIsoCode($payment['ccy']);
+                if (!$id_currency) {
+                    PrestaShopLogger::addLog(
+                        sprintf(
+                            'Privat24: order id %s cannot get currency id by iso code: %s',
+                            $order->id,
+                            $payment['ccy']
+                        ),
+                        3
+                    );
+                    die();
+                }
+                if ($order->id_currency != $id_currency) {
+                    PrestaShopLogger::addLog(
+                        sprintf(
+                            'Privat 24: order id %s, order currency id %s does not match with %s',
+                            $order->id,
+                            $order->id_currency,
+                            $id_currency
+                        ),
+                        3
+                    );
+                    die();
+                }
+                if ((float)$order->total_paid != (float)$payment['amt']) {
+                    PrestaShopLogger::addLog(
+                        sprintf(
+                            'Privat 24: order id %s order total paid %s does not match %s',
+                            $order->id,
+                            $order->total_paid,
+                            $payment['amt']
+                        ),
+                        3
+                    );
+                    die();
+                }
+                
                 $order_history = new OrderHistory();
                 $order_history->id_order = $order->id;
                 $order_history->changeIdOrderState(_PS_OS_PAYMENT_, $order->id);
@@ -104,10 +143,10 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
     {
         Db::getInstance()->execute('
             UPDATE `'._DB_PREFIX_.'order_payment`
-            SET transaction_id = "' . $payment['ref'] . '"
-            WHERE order_reference = "' . $order->reference . '"
-                AND amount = ' . $payment['amt'] . '
-                AND payment_method = "' . $this->module->displayName . '"
+            SET transaction_id = "' . pSQL($payment['ref']) . '"
+            WHERE order_reference = "' . pSQL($order->reference) . '"
+                AND amount = ' . pSQL($payment['amt']) . '
+                AND payment_method = "' . pSQL($this->module->displayName) . '"
                 AND transaction_id = ""
         ');
     }
