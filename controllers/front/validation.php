@@ -4,7 +4,6 @@
 *
 *   @author    Skorobogatko Alexei <a.skorobogatko@soft-industry.com>
 *   @copyright 2016 Soft-Industry
-*   @version   $Id$
 *   @license   http://opensource.org/licenses/afl-3.0.php
 */
 
