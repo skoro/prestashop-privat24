@@ -6,3 +6,6 @@ Try to upload module to PrestaShop market.
 
 0.2
 Check order currency and paid amount before changing order state.
+
+0.2.1 - 15 May 2017
+Improve module settings form. Translations updated.
