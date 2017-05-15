@@ -188,6 +188,7 @@ class Privat24 extends PaymentModule
     
     /**
      * Parse emails from a string data.
+     *
      * @param string $data
      * @return array
      */
@@ -197,14 +198,62 @@ class Privat24 extends PaymentModule
         $lines = array_filter($lines, 'trim');
         $data = implode(',', $lines);
         $data = explode(',', trim($data));
+        $data = array_filter($data);
         $emails = array();
+        $errors = array();
+
         foreach ($data as $email) {
             $email = trim($email);
             if (Validate::isEmail($email)) {
                 $emails[] = $email;
+            } else {
+                $errors[] = $email;
             }
         }
-        return $emails;
+
+        return array(
+            'emails' => $emails,
+            'errors' => $errors,
+        );
+    }
+    
+    /**
+     * Validate settings form POST data.
+     *
+     * @return array
+     * @since 0.2.1
+     */
+    protected function _postValidate()
+    {
+        $errors = [];
+        
+        if (Tools::isSubmit('submit' . $this->name)) {
+
+            $merchant_id = Tools::getValue('PRIVAT24_MERCHANT_ID');
+            if (!$merchant_id) {
+                $errors[] = 'Merchant ID is required.';
+            }
+            if (!Validate::isUnsignedInt($merchant_id)) {
+                $errors[] = 'Merchant ID must be a number.';
+            }
+
+            if (!Tools::getValue('PRIVAT24_MERCHANT_PASSWORD')) {
+                $errors[] = 'Merchant password is required.';
+            }
+
+            $emails = $this->validateEmails(Tools::getValue('PRIVAT24_NOTIFY_EMAILS'));
+            if ($emails['errors']) {
+                $errors[] = 'Please check these emails are correct: ' .
+                    implode(', ', $emails['errors']);
+            }
+            
+            $notify = (bool) Tools::getValue('PRIVAT24_PAYMENT_NOTIFY');
+            if ($notify && empty($emails['emails']) && empty($emails['errors'])) {
+                $errors[] = 'Email(s) needed when notify is enabled.';
+            }
+        }
+        
+        return $errors;
     }
     
     /**
@@ -215,33 +264,38 @@ class Privat24 extends PaymentModule
     public function getContent()
     {
         $output = $status = '';
+
         if (Tools::isSubmit('submit' . $this->name)) {
-            $merchant_id = (string) Tools::getValue('PRIVAT24_MERCHANT_ID');
-            $merchant_password = (string) Tools::getValue('PRIVAT24_MERCHANT_PASSWORD');
-            $notify = (bool)Tools::getValue('PRIVAT24_PAYMENT_NOTIFY');
-            $emails = Tools::getValue('PRIVAT24_NOTIFY_EMAILS');
-            $status = '';
-            // TODO: merchant_id is big integer ?
-            if ($merchant_id && Validate::isGenericName($merchant_id) && $merchant_password) {
+
+            $errors = $this->_postValidate();
+
+            if (empty($errors)) {
+                $merchant_id = Tools::getValue('PRIVAT24_MERCHANT_ID');
+                $merchant_password = Tools::getValue('PRIVAT24_MERCHANT_PASSWORD');
+                $notify = (bool) Tools::getValue('PRIVAT24_PAYMENT_NOTIFY');
+                $emails = Tools::getValue('PRIVAT24_NOTIFY_EMAILS');
+
                 $backend_uri = str_replace('index.php', '', $_SERVER['PHP_SELF']);
+
                 Configuration::updateValue('PRIVAT24_BACKEND_URI', $backend_uri);
                 Configuration::updateValue('PRIVAT24_MERCHANT_ID', $merchant_id);
                 Configuration::updateValue('PRIVAT24_MERCHANT_PASSWORD', $merchant_password);
                 Configuration::updateValue('PRIVAT24_DEBUG_MODE', (bool)Tools::getValue('PRIVAT24_DEBUG_MODE'));
+                Configuration::updateValue('PRIVAT24_PAYMENT_NOTIFY', $notify);
+                Configuration::updateValue('PRIVAT24_NOTIFY_EMAILS', $emails);
+
                 $this->merchant_id = $merchant_id;
                 $this->merchant_password = $merchant_password;
-                $validateEmails = $this->validateEmails($emails);
-                if ($notify && !$validateEmails) {
-                    $status = $this->displayError($this->l('Please enter emails separated by comma.'));
-                } else {
-                    Configuration::updateValue('PRIVAT24_PAYMENT_NOTIFY', $notify);
-                    Configuration::updateValue('PRIVAT24_NOTIFY_EMAILS', $emails);
-                    $status = $this->displayConfirmation($this->l('Merchant id has been updated.'));
+                
+                $status .= $this->displayConfirmation($this->l('Settings has been updated.'));
+            }
+            else {
+                foreach ($errors as $error) {
+                    $status .= $this->displayError($this->l($error));
                 }
-            } else {
-                $status = $this->displayError($this->l('Invalid Configuration value'));
             }
         }
+
         return $output . $status . $this->displayForm();
     }
     
@@ -305,16 +359,28 @@ class Privat24 extends PaymentModule
         );
         
         $helper->submit_action = 'submit' . $this->name;
-        $helper->fields_value['PRIVAT24_MERCHANT_ID'] = Configuration::get('PRIVAT24_MERCHANT_ID');
-        $helper->fields_value['PRIVAT24_MERCHANT_PASSWORD'] = Configuration::get('PRIVAT24_MERCHANT_PASSWORD');
-        $helper->fields_value['PRIVAT24_DEBUG_MODE'] = Configuration::get('PRIVAT24_DEBUG_MODE');
-        $helper->fields_value['PRIVAT24_PAYMENT_NOTIFY'] = Configuration::get('PRIVAT24_PAYMENT_NOTIFY');
-        $helper->fields_value['PRIVAT24_NOTIFY_EMAILS'] = Tools::getValue(
-            'PRIVAT24_NOTIFY_EMAILS',
-            Configuration::get('PRIVAT24_NOTIFY_EMAILS')
+        $helper->tpl_vars = array(
+            'fields_value' => $this->getConfigFieldsValues(),
         );
         
         return $helper->generateForm($fields_form);
+    }
+    
+    /**
+     * Get form fields configuration values.
+     *
+     * @return array
+     * @since 0.2.1
+     */
+    public function getConfigFieldsValues()
+    {
+        return array(
+            'PRIVAT24_MERCHANT_ID' => Tools::getValue('PRIVAT24_MERCHANT_ID', Configuration::get('PRIVAT24_MERCHANT_ID')),
+            'PRIVAT24_MERCHANT_PASSWORD' => Tools::getValue('PRIVAT24_MERCHANT_PASSWORD', Configuration::get('PRIVAT24_MERCHANT_PASSWORD')),
+            'PRIVAT24_DEBUG_MODE' => Tools::getValue('PRIVAT24_DEBUG_MODE', Configuration::get('PRIVAT24_DEBUG_MODE')),
+            'PRIVAT24_PAYMENT_NOTIFY' => Tools::getValue('PRIVAT24_PAYMENT_NOTIFY', Configuration::get('PRIVAT24_PAYMENT_NOTIFY')),
+            'PRIVAT24_NOTIFY_EMAILS' => Tools::getValue('PRIVAT24_NOTIFY_EMAILS', Configuration::get('PRIVAT24_NOTIFY_EMAILS')),
+        );
     }
     
     /**
@@ -362,7 +428,7 @@ class Privat24 extends PaymentModule
             return false;
         }
         $emails = $this->validateEmails(Configuration::get('PRIVAT24_NOTIFY_EMAILS'));
-        if ($emails) {
+        if (!empty($emails['emails'])) {
             $template = 'privat24_payment';
             $subject = $this->l('Payment accepted via Privat24');
             $context = Context::getContext();
@@ -375,7 +441,7 @@ class Privat24 extends PaymentModule
                 '{amount}' => $payment['amt'] . ' ' . $context->currency->iso_code,
                 '{payment_transaction}' => $payment['ref'],
             );
-            foreach ($emails as $email) {
+            foreach ($emails['emails'] as $email) {
                 Mail::Send((int)$order->id_lang, $template, $subject, $data, $email);
             }
         }
