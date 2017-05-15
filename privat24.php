@@ -331,7 +331,7 @@ class Privat24 extends PaymentModule
                     'type' => 'switch',
                     'label' => $this->l('Enable debug mode'),
                     'name' => 'PRIVAT24_DEBUG_MODE',
-                    'desc' => $this->l('Log all positive Privat24 API responses in ')
+                    'desc' => $this->l('Log all Privat24 API responses in ')
                                 . _PS_ROOT_DIR_.'/log/'
                                 . $this->l(' directory.'),
                     'is_bool' => true,
