@@ -42,7 +42,7 @@ class Privat24 extends PaymentModule
     public function __construct()
     {
         $this->name = 'privat24';
-        $this->version = '0.2.0';
+        $this->version = '0.2.1';
         $this->author = 'Soft Industry';
         $this->tab = 'payments_gateways';
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
