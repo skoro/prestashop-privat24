@@ -287,7 +287,7 @@ class Privat24 extends PaymentModule
                 $this->merchant_id = $merchant_id;
                 $this->merchant_password = $merchant_password;
                 
-                $status .= $this->displayConfirmation($this->l('Settings has been updated.'));
+                $status .= $this->displayConfirmation($this->l('Settings have been updated.'));
             }
             else {
                 foreach ($errors as $error) {
