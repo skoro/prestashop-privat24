@@ -335,9 +335,10 @@ class Privat24 extends PaymentModule
                                 . _PS_ROOT_DIR_.'/log/'
                                 . $this->l(' directory.'),
                     'is_bool' => true,
+                    'default_value' => 0,
                     'values' => array(
-                        array('value' => 0),
                         array('value' => 1),
+                        array('value' => 0),
                     ),
                 ),
                 array(
@@ -345,6 +346,7 @@ class Privat24 extends PaymentModule
                     'label' => $this->l('Email notify when payment accepted'),
                     'name' => 'PRIVAT24_PAYMENT_NOTIFY',
                     'is_bool' => true,
+                    'default_value' => 0,
                     'values' => array(
                         array('value' => 1),
                         array('value' => 0),
