@@ -226,8 +226,8 @@ class Privat24 extends PaymentModule
     protected function postValidate()
     {
         $errors = array();
+        
         if (Tools::isSubmit('submit' . $this->name)) {
-
             $merchant_id = Tools::getValue('PRIVAT24_MERCHANT_ID');
             if (!$merchant_id) {
                 $errors[] = $this->l('Merchant ID is required.');
@@ -263,8 +263,8 @@ class Privat24 extends PaymentModule
     public function getContent()
     {
         $output = $status = '';
+        
         if (Tools::isSubmit('submit' . $this->name)) {
-
             $errors = $this->postValidate();
 
             if (empty($errors)) {
@@ -378,16 +378,11 @@ class Privat24 extends PaymentModule
     public function getConfigFieldsValues()
     {
         return array(
-            'PRIVAT24_MERCHANT_ID' => Tools::getValue('PRIVAT24_MERCHANT_ID',
-                    Configuration::get('PRIVAT24_MERCHANT_ID')),
-            'PRIVAT24_MERCHANT_PASSWORD' => Tools::getValue('PRIVAT24_MERCHANT_PASSWORD',
-                    Configuration::get('PRIVAT24_MERCHANT_PASSWORD')),
-            'PRIVAT24_DEBUG_MODE' => Tools::getValue('PRIVAT24_DEBUG_MODE',
-                    Configuration::get('PRIVAT24_DEBUG_MODE')),
-            'PRIVAT24_PAYMENT_NOTIFY' => Tools::getValue('PRIVAT24_PAYMENT_NOTIFY',
-                    Configuration::get('PRIVAT24_PAYMENT_NOTIFY')),
-            'PRIVAT24_NOTIFY_EMAILS' => Tools::getValue('PRIVAT24_NOTIFY_EMAILS',
-                    Configuration::get('PRIVAT24_NOTIFY_EMAILS')),
+            'PRIVAT24_MERCHANT_ID' => Tools::getValue('PRIVAT24_MERCHANT_ID', Configuration::get('PRIVAT24_MERCHANT_ID')),
+            'PRIVAT24_MERCHANT_PASSWORD' => Tools::getValue('PRIVAT24_MERCHANT_PASSWORD', Configuration::get('PRIVAT24_MERCHANT_PASSWORD')),
+            'PRIVAT24_DEBUG_MODE' => Tools::getValue('PRIVAT24_DEBUG_MODE', Configuration::get('PRIVAT24_DEBUG_MODE')),
+            'PRIVAT24_PAYMENT_NOTIFY' => Tools::getValue('PRIVAT24_PAYMENT_NOTIFY', Configuration::get('PRIVAT24_PAYMENT_NOTIFY')),
+            'PRIVAT24_NOTIFY_EMAILS' => Tools::getValue('PRIVAT24_NOTIFY_EMAILS', Configuration::get('PRIVAT24_NOTIFY_EMAILS')),
         );
     }
     
