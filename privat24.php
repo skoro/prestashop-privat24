@@ -45,7 +45,7 @@ class Privat24 extends PaymentModule
         $this->version = '0.2.0';
         $this->author = 'Soft Industry';
         $this->tab = 'payments_gateways';
-        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => '1.6.99.99');
         $this->need_instance = 0;
         $this->bootstrap = true;
         $this->module_key = '98300a9bd7f3e615cc475c9e56cfef25';
