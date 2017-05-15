@@ -223,10 +223,9 @@ class Privat24 extends PaymentModule
      * @return array
      * @since 0.2.1
      */
-    protected function _postValidate()
+    protected function postValidate()
     {
-        $errors = [];
-        
+        $errors = array();
         if (Tools::isSubmit('submit' . $this->name)) {
 
             $merchant_id = Tools::getValue('PRIVAT24_MERCHANT_ID');
@@ -264,10 +263,9 @@ class Privat24 extends PaymentModule
     public function getContent()
     {
         $output = $status = '';
-
         if (Tools::isSubmit('submit' . $this->name)) {
 
-            $errors = $this->_postValidate();
+            $errors = $this->postValidate();
 
             if (empty($errors)) {
                 $merchant_id = Tools::getValue('PRIVAT24_MERCHANT_ID');
@@ -288,8 +286,7 @@ class Privat24 extends PaymentModule
                 $this->merchant_password = $merchant_password;
                 
                 $status .= $this->displayConfirmation($this->l('Settings have been updated.'));
-            }
-            else {
+            } else {
                 foreach ($errors as $error) {
                     $status .= $this->displayError($error);
                 }
@@ -381,11 +378,16 @@ class Privat24 extends PaymentModule
     public function getConfigFieldsValues()
     {
         return array(
-            'PRIVAT24_MERCHANT_ID' => Tools::getValue('PRIVAT24_MERCHANT_ID', Configuration::get('PRIVAT24_MERCHANT_ID')),
-            'PRIVAT24_MERCHANT_PASSWORD' => Tools::getValue('PRIVAT24_MERCHANT_PASSWORD', Configuration::get('PRIVAT24_MERCHANT_PASSWORD')),
-            'PRIVAT24_DEBUG_MODE' => Tools::getValue('PRIVAT24_DEBUG_MODE', Configuration::get('PRIVAT24_DEBUG_MODE')),
-            'PRIVAT24_PAYMENT_NOTIFY' => Tools::getValue('PRIVAT24_PAYMENT_NOTIFY', Configuration::get('PRIVAT24_PAYMENT_NOTIFY')),
-            'PRIVAT24_NOTIFY_EMAILS' => Tools::getValue('PRIVAT24_NOTIFY_EMAILS', Configuration::get('PRIVAT24_NOTIFY_EMAILS')),
+            'PRIVAT24_MERCHANT_ID' => Tools::getValue('PRIVAT24_MERCHANT_ID',
+                    Configuration::get('PRIVAT24_MERCHANT_ID')),
+            'PRIVAT24_MERCHANT_PASSWORD' => Tools::getValue('PRIVAT24_MERCHANT_PASSWORD',
+                    Configuration::get('PRIVAT24_MERCHANT_PASSWORD')),
+            'PRIVAT24_DEBUG_MODE' => Tools::getValue('PRIVAT24_DEBUG_MODE',
+                    Configuration::get('PRIVAT24_DEBUG_MODE')),
+            'PRIVAT24_PAYMENT_NOTIFY' => Tools::getValue('PRIVAT24_PAYMENT_NOTIFY',
+                    Configuration::get('PRIVAT24_PAYMENT_NOTIFY')),
+            'PRIVAT24_NOTIFY_EMAILS' => Tools::getValue('PRIVAT24_NOTIFY_EMAILS',
+                    Configuration::get('PRIVAT24_NOTIFY_EMAILS')),
         );
     }
     
