@@ -231,25 +231,25 @@ class Privat24 extends PaymentModule
 
             $merchant_id = Tools::getValue('PRIVAT24_MERCHANT_ID');
             if (!$merchant_id) {
-                $errors[] = 'Merchant ID is required.';
+                $errors[] = $this->l('Merchant ID is required.');
             }
             if (!Validate::isUnsignedInt($merchant_id)) {
-                $errors[] = 'Merchant ID must be a number.';
+                $errors[] = $this->l('Merchant ID must be a number.');
             }
 
             if (!Tools::getValue('PRIVAT24_MERCHANT_PASSWORD')) {
-                $errors[] = 'Merchant password is required.';
+                $errors[] = $this->l('Merchant password is required.');
             }
 
             $emails = $this->validateEmails(Tools::getValue('PRIVAT24_NOTIFY_EMAILS'));
             if ($emails['errors']) {
-                $errors[] = 'Please check these emails are correct: ' .
+                $errors[] = $this->l('Please check these emails are correct: ') .
                     implode(', ', $emails['errors']);
             }
             
             $notify = (bool) Tools::getValue('PRIVAT24_PAYMENT_NOTIFY');
             if ($notify && empty($emails['emails']) && empty($emails['errors'])) {
-                $errors[] = 'Email(s) needed when notify is enabled.';
+                $errors[] = $this->l('Email(s) needed when notify is enabled.');
             }
         }
         
@@ -291,7 +291,7 @@ class Privat24 extends PaymentModule
             }
             else {
                 foreach ($errors as $error) {
-                    $status .= $this->displayError($this->l($error));
+                    $status .= $this->displayError($error);
                 }
             }
         }
