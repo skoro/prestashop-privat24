@@ -140,13 +140,14 @@ class Privat24ValidationModuleFrontController extends ModuleFrontController
      */
     protected function setPaymentTransaction($order, array $payment)
     {
-        Db::getInstance()->execute('
-            UPDATE `'._DB_PREFIX_.'order_payment`
-            SET transaction_id = "' . pSQL($payment['ref']) . '"
-            WHERE order_reference = "' . pSQL($order->reference) . '"
-                AND amount = ' . pSQL($payment['amt']) . '
-                AND payment_method = "' . pSQL($this->module->displayName) . '"
-                AND transaction_id = ""
-        ');
+        $where = 'order_reference = "' . pSQL($order->reference) . '"' .
+                ' AND amount = ' . (float) $payment['amt'] . 
+                ' AND payment_method = "' . pSQL($this->module->displayName) . '"' .
+                ' AND transaction_id = ""';
+
+        Db::getInstance()->update('order_payment',
+                array('transaction_id' => $payment['ref']),
+                $where
+        );
     }
 }
