@@ -304,6 +304,14 @@ class Privat24 extends PaymentModule
     public function displayForm()
     {
         $helper = new HelperForm();
+        $helper->module = $this;
+        $helper->name_controller = $this->name;
+        $helper->token = Tools::getAdminTokenLite('AdminModules');
+        $helper->currentIndex = AdminController::$currentIndex.'&configure='.$this->name;
+        $helper->title = $this->displayName;
+        $helper->show_toolbar = true;
+        $helper->toolbar_scroll = true;
+        $helper->submit_action = 'submit'.$this->name;
         
         $fields_form = array();
         $fields_form['cfg']['form'] = array(
@@ -361,7 +369,6 @@ class Privat24 extends PaymentModule
             ),
         );
         
-        $helper->submit_action = 'submit' . $this->name;
         $helper->tpl_vars = array(
             'fields_value' => $this->getConfigFieldsValues(),
         );
